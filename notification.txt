@@ -1,0 +1,17 @@
+from chat_app.tasks import sent_note_to_user
+
+
+sent_note_to_user.delay(user_id=3, title=f"Job Assigned by {company.company_name}!", content = f"You’ve been selected for a new job,Please review and sign the contract.", note_type='success')     
+                     
+
+
+
+
+
+
+
+
+[6:00 PM, 10/31/2025] Showarav Sir: Ok
+[8:25 PM, 10/31/2025] Showarav Sir: 72.60.222.99
+[8:27 PM, 10/31/2025] Showarav Sir: pass: Vf2LcNGXMAq'XTh9S9+#
+[8:28 PM, 10/31/2025] Showarav Sir: username: root

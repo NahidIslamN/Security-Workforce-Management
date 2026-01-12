@@ -1,0 +1,6 @@
+celery -A SecurityGuard worker --loglevel=info
+
+docker compose up --build
+
+
+z1Ae'KzGa4yvK0bYn@4N
