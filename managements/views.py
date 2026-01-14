@@ -711,9 +711,17 @@ class GuardsJobPostSection(APIView):
             query_per_pay_rate_min = int(request.GET.get('pay_rate_min', 0))
             query_per_pay_rate_max = int(request.GET.get('pay_rate_max', 0))
 
+            query_per_title = request.GET.get('title')
+            
             # Apply OR filter if filters are provided
             filters = Q()
 
+
+            if query_per_title:
+                filters |= Q(job_title__icontains=query_per_title)
+
+
+            
             if query_per_ln_type_id:
                 filters |= Q(licence_type_requirements__id=query_per_ln_type_id)
 

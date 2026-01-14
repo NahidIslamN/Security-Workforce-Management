@@ -6,8 +6,10 @@ from django.conf.urls.static import static
 from managements.views import SubscribeNow
 from api.views import GetMyPolan
 from managements.hock import stripe_webhook
+from .views import HomePage
 
 urlpatterns = [
+    path('', HomePage.as_view(), name="homepage"),
     path('admin/', admin.site.urls),
     path('api/auth/', include('api.urls')),
     path('api/chat-note/', include('chat_app.urls')),
