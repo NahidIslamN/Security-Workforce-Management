@@ -36,7 +36,7 @@ COPY --from=nginx_builder /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/defau
 COPY . /app/
 
 
-RUN mkdir -p /app/static /app/media
+RUN mkdir -p /app/static /app/media /app/data
 
 EXPOSE 80
 

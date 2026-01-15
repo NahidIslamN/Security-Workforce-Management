@@ -131,6 +131,7 @@ class LoginView(APIView):
                                 "message":"login successfull!",
                                 'access': str(refresh.access_token),
                                 'refresh': str(refresh),
+                                'is_admin_aproved':user.is_admin_aproved,
                                 'guard_details':serializer.data
                                 
                             }, status=status.HTTP_200_OK)

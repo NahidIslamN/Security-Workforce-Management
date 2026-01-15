@@ -4,7 +4,7 @@ services:
   web:
     build: .
     container_name: web
-    command: python manage.py runserver 0.0.0.0:8001
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8001"
     ports:
       - "8001:8001"
     env_file: .env
@@ -12,12 +12,13 @@ services:
       - redis
     restart: always
     volumes:
-      # persist the sqlite database on the host
-      - ./db.sqlite3:/app/db.sqlite3
+      # persist database in data directory
+      - ./data:/app/data
       # persist uploaded media/static files and collected staticfiles
       - ./public/static:/app/public/static
       - ./staticfiles:/app/staticfiles
       - ./static:/app/static
+    working_dir: /app
 
   worker:
     build: .
@@ -29,7 +30,8 @@ services:
       - web  # ensure web container up first
     restart: always
     volumes:
-      - ./db.sqlite3:/app/db.sqlite3
+      # persist database in data directory
+      - ./data:/app/data
       - ./public/static:/app/public/static
       - ./staticfiles:/app/staticfiles
       - ./static:/app/static
