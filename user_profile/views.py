@@ -154,12 +154,22 @@ class UserLicenceCreateView(APIView):
     def post(self, request):
         serializer = LicencesCreateUpdateSerializers(data = request.data)
         if serializer.is_valid():
+
+            lisence_noe = serializer.get('licence_no')
+            if LicencesModel.objects.filter(licence_no = lisence_noe).exists():
+                lin = LicencesModel.objects.get(licence_no = lisence_noe)
+                lin.expire_date = serializer.get("expire_date")
+                lin.state_or_territory = serializer.get('state_or_territory')
+                lin.licence_images = serializer.get('licence_images')
+                lin.save()
+                return Response({"success":True,"message":"licence created success!", "data":serializer.data}, status=status.HTTP_201_CREATED)
+
+
             license = serializer.save()
             user = request.user
             user.licences.add(license)
             user.save()
 
-            # Notify user about license addition
             sent_note_to_user.delay(user_id=request.user.id, title=f"License Added", content=f"Your license has been added successfully", note_type='success')
             return Response({"success":True,"message":"licence created success!", "data":serializer.data}, status=status.HTTP_201_CREATED)
         else:

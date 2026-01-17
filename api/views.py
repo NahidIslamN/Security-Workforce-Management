@@ -32,7 +32,7 @@ class SignupView(APIView):
             user.user_type = serializers.initial_data['user_type']
             user.first_name = serializers.initial_data['first_name']
             user.save()    
-            return Response({ "success": True, "message": "user create successfully!"},status=status.HTTP_201_CREATED)
+            return Response({ "success": True, "message": "The user has been created successfully."},status=status.HTTP_201_CREATED)
 
         if serializers.is_valid():
             user = serializers.save()
@@ -63,9 +63,9 @@ class SignupView(APIView):
             else:
                 pass
 
-            return Response({ "success": True, "message": "user create successfully!"},status=status.HTTP_201_CREATED)
+            return Response({ "success": True, "message": "The user has been created successfully."},status=status.HTTP_201_CREATED)
         
-        return Response({ "success": False, "message": "email already exists!", "errors":serializers.errors},status=status.HTTP_400_BAD_REQUEST)
+        return Response({ "success": False, "message": "The email address already exists.", "errors":serializers.errors},status=status.HTTP_400_BAD_REQUEST)
 
 
     
@@ -86,9 +86,9 @@ class Verify_Email_Signup(APIView):
                     user.save()
                     # Notify user about successful email verification
                     sent_note_to_user.delay(user_id=user.id, title=f"Email Verified", content=f"Your email has been successfully verified. Welcome to SecurityGuard!", note_type='success')
-                    return Response({"message":"verifyed successfully"}, status = status.HTTP_200_OK)
+                    return Response({"message":"verified successfully!"}, status = status.HTTP_200_OK)
                 else:
-                    return Response({"success":False,"message":"wrong varification code!"}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"success":False,"message":"Invalid verification code."}, status=status.HTTP_400_BAD_REQUEST)
 
             except CustomUser.DoesNotExist:
                 return Response({"success":False,"message":"user not found"},status=status.HTTP_400_BAD_REQUEST)
@@ -114,7 +114,7 @@ class LoginView(APIView):
                         return Response( {
                             "success":True,
                             'verified':True,
-                            "message":"login successfull!",
+                            "message":f"Welcome {user.first_name}!",
                             'access': str(refresh.access_token),
                             'refresh': str(refresh)  
                                                 
@@ -128,7 +128,7 @@ class LoginView(APIView):
                             return Response( {
                                 "success":True,
                                 'is_admin_aproved':user.is_admin_aproved,
-                                "message":"login successfull!",
+                                "message":f"Welcome {user.first_name}!",
                                 'access': str(refresh.access_token),
                                 'refresh': str(refresh),
                                 'guard_details':serializer.data
@@ -144,7 +144,7 @@ class LoginView(APIView):
                                 "success":True,
                                 'verified':False,
                                 'company_name':user.first_name,
-                                "message":"login successfull!",
+                                "message":f"Welcome {user.first_name}!",
                                 'access': str(refresh.access_token),
                                 'refresh': str(refresh),
                                 'company_info':company_serializer.data
@@ -163,14 +163,14 @@ class LoginView(APIView):
                 return Response(
                     {
                         "success":False,
-                        "message":"We sent an otp to your email! verify your first then login", 
+                        "message":"OTP sent to your email. Please verify before logging.", 
                         
                     },
                     status=status.HTTP_401_UNAUTHORIZED
                     
                 )
 
-            return Response({"success":False,"message":"username or password Invalid!"}, status=status.HTTP_400_BAD_REQUEST)   
+            return Response({"success":False,"message":"Invalid username or password.!"}, status=status.HTTP_400_BAD_REQUEST)   
         return Response({"success":False,"message":"validation errors", "errors":serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
 
@@ -187,7 +187,7 @@ class ChangePassword(APIView):
                 user.set_password(serializer.data['new_password'])
                 user.save()
                 # Notify user about password change
-                sent_note_to_user.delay(user_id=user.id, title=f"Password Changed", content=f"Your password has been changed successfully", note_type='success')
+                sent_note_to_user.delay(user_id=user.id, title=f"Password changed successfully.", content=f"Your password has been changed successfully", note_type='success')
                 return Response({"message":"Password changed successfully!"}, status= status.HTTP_200_OK)
             else:
                 return Response({"message":"worng old password!"}, status=status.HTTP_400_BAD_REQUEST )
@@ -242,7 +242,7 @@ class ForgetPasswordView(APIView):
 
             except CustomUser.DoesNotExist:
                 return Response(
-                    {"success": False, "message": "User not found"},
+                    {"success": False, "message": "User not found."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
@@ -272,12 +272,12 @@ class Verify_User_ForgetPassword(APIView):
                     user.save()
                     return Response( {
                         "success":True,
-                        "message":"verified successfull!",
+                        "message":"verified successfully!",
                         'access': str(refresh.access_token),
                         'refresh': str(refresh)                        
                     },status=status.HTTP_200_OK)
                 else:
-                    return Response({"success":False,"message":"wrong varification code!"}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"success":False,"message":"Invalid verification code."}, status=status.HTTP_400_BAD_REQUEST)
             except CustomUser.DoesNotExist:
                 return Response({"success":False,"message":"User not found!"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"success":False,"message":"validation errors", "errors":serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
@@ -294,7 +294,7 @@ class ResetPasswordView(APIView):
             # Notify user about password reset
             sent_note_to_user.delay(user_id=user.id, title=f"Password Reset", content=f"Your password has been reset successfully", note_type='success')
             user.save()
-            return Response({ "success": True, "message": "password reset successfully"}, status=status.HTTP_200_OK)
+            return Response({ "success": True, "message": "Your password has been reset successfully."}, status=status.HTTP_200_OK)
         return Response({ "success": False, "message": "validation error!", "errors": serializer.errors }, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -302,7 +302,7 @@ def generate_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
     return {
         "success":True,
-        "message":"login success",
+        "message":f"Welcome {user.first_name}",
         "access": str(refresh.access_token),
         "refresh": str(refresh),
         
@@ -339,7 +339,7 @@ class GetMyPolan(APIView):
         return Response(
             {
                 "success":True,
-                "message":"data fatched!",
+                "message":"Subscription plans retrieved successfully.!",
                 "plans":serializer.data
             }
         )

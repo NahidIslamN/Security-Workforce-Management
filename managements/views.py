@@ -2,7 +2,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from SecurityGuard.custom_permissions import IsCompany, IsSubscribe, IsEmailVerified, IsGuard
+from SecurityGuard.custom_permissions import IsCompany, IsSubscribe, IsEmailVerified, IsGuard, Is_Admin_Verified
 from rest_framework.permissions import IsAuthenticated
 from .serializers import *
 from api.models import CompanyModel, JobModel, JobApplications, EngagementModel, OperativeNote, SupportMessage
@@ -107,13 +107,11 @@ class Guard_Dashboard(APIView):
 class PostJobs(APIView):
     permission_classes = [IsCompany, IsSubscribe]
     def get_permissions(self):
-        if self.request.method == "GET":
-            # Only POST requires these permissions
-            return [IsCompany(), IsSubscribe()]
-        elif self.request.method == "POST":
-            return [IsCompany(), IsSubscribe()]
-        # GET has no permissions
-        return []
+        # Enforce admin verification only for POST requests
+        if self.request.method == "POST":
+            return [IsCompany(), IsSubscribe(), Is_Admin_Verified()]
+        # For other methods, keep existing company+subscribe checks
+        return [IsCompany(), IsSubscribe()]
 
 
     def get(self, request):
@@ -680,6 +678,11 @@ class EngagementsDetailsViews(APIView):
 
 class GuardsJobPostSection(APIView):
     permission_classes = [IsAuthenticated, IsEmailVerified]
+    def get_permissions(self):
+        # Enforce admin verification only for POST requests
+        if self.request.method == "POST":
+            return [IsAuthenticated(), IsEmailVerified(), Is_Admin_Verified()]
+        return [IsAuthenticated(), IsEmailVerified()]
     def get(self, request):
         try:
             query_per_redius = int(request.GET.get('redius', 10000))  

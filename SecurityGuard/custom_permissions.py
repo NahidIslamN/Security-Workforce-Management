@@ -25,7 +25,7 @@ class IsGuard(permissions.BasePermission):
     def has_permission(self, request, view):
         
         
-        return bool(request.user and request.user.is_authenticated and request.user.is_email_varified and request.user.user_type == 'guard' and request.user.is_admin_aproved)
+        return bool(request.user and request.user.is_authenticated and request.user.is_email_varified and request.user.user_type == 'guard')
 
 
 
@@ -38,6 +38,5 @@ class IsGuard(permissions.BasePermission):
 
 class Is_Admin_Verified(permissions.BasePermission):
     def has_permission(self, request, view):
-
-        return request.user.is_admin_aproved
+        return bool(request.user and getattr(request.user, 'is_authenticated', False) and getattr(request.user, 'is_admin_aproved', False))
 
