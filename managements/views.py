@@ -106,6 +106,16 @@ class Guard_Dashboard(APIView):
 
 class PostJobs(APIView):
     permission_classes = [IsCompany, IsSubscribe]
+    def get_permissions(self):
+        if self.request.method == "GET":
+            # Only POST requires these permissions
+            return [IsCompany(), IsSubscribe()]
+        elif self.request.method == "POST":
+            return [IsCompany(), IsSubscribe()]
+        # GET has no permissions
+        return []
+
+
     def get(self, request):
         user = request.user
         company, create = CompanyModel.objects.get_or_create(company = user)

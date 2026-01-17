@@ -127,11 +127,10 @@ class LoginView(APIView):
                             refresh = RefreshToken.for_user(user)
                             return Response( {
                                 "success":True,
-                                'verified':False,
+                                'is_admin_aproved':user.is_admin_aproved,
                                 "message":"login successfull!",
                                 'access': str(refresh.access_token),
                                 'refresh': str(refresh),
-                                'is_admin_aproved':user.is_admin_aproved,
                                 'guard_details':serializer.data
                                 
                             }, status=status.HTTP_200_OK)
