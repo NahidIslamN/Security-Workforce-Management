@@ -32,7 +32,7 @@ class SignupView(APIView):
             user.user_type = serializers.initial_data['user_type']
             user.first_name = serializers.initial_data['first_name']
             user.save()    
-            return Response({ "success": True, "message": "The user has been created successfully."},status=status.HTTP_201_CREATED)
+            return Response({ "success": True, "message": "user created successfully."},status=status.HTTP_201_CREATED)
 
         if serializers.is_valid():
             user = serializers.save()

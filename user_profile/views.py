@@ -150,30 +150,30 @@ class UserLicenceCreateView(APIView):
         licences = user.licences.all()
         serializer = LicenceSerializerView(licences, many=True)
         return Response({"success":True,"message":"data fatched!", "data":serializer.data})
+        
     
     def post(self, request):
         serializer = LicencesCreateUpdateSerializers(data = request.data)
-        if serializer.is_valid():
+        lisence_noe = request.data.get('licence_no')
+        if LicencesModel.objects.filter(licence_no = lisence_noe).exists():
+            lin = LicencesModel.objects.get(licence_no = lisence_noe)
+            lin.expire_date = request.data.get("expire_date")
+            lin.state_or_territory = request.data.get('state_or_territory')
+            lin.licence_images = request.data.get('licence_images')
+            lin.save()
+            return Response({"success":True,"message":"licence created success!", "data":serializer.data}, status=status.HTTP_201_CREATED)
 
-            lisence_noe = serializer.get('licence_no')
-            if LicencesModel.objects.filter(licence_no = lisence_noe).exists():
-                lin = LicencesModel.objects.get(licence_no = lisence_noe)
-                lin.expire_date = serializer.get("expire_date")
-                lin.state_or_territory = serializer.get('state_or_territory')
-                lin.licence_images = serializer.get('licence_images')
-                lin.save()
-                return Response({"success":True,"message":"licence created success!", "data":serializer.data}, status=status.HTTP_201_CREATED)
-
-
+        elif serializer.is_valid():
             license = serializer.save()
             user = request.user
             user.licences.add(license)
             user.save()
 
             sent_note_to_user.delay(user_id=request.user.id, title=f"License Added", content=f"Your license has been added successfully", note_type='success')
-            return Response({"success":True,"message":"licence created success!", "data":serializer.data}, status=status.HTTP_201_CREATED)
+            return Response({"success":True,"message":"licence created successfully!", "data":serializer.data}, status=status.HTTP_201_CREATED)
         else:
             return Response({"success":False,"message":"validation errors!", "errors":serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
     
     def put(self, request, pk):
         try:
